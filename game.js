@@ -21,13 +21,19 @@
   var elTime = document.getElementById('stat-time');
   var elBest = document.getElementById('stat-best');
   var elDebug = document.getElementById('stat-debug');
-  var BUILD = 'v13';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
+  var BUILD = 'v14';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
   var frameCount = 0;
   var overlay = document.getElementById('overlay');
   var ovTitle = document.getElementById('ov-title');
   var ovText = document.getElementById('ov-text');
   var ovBtn = document.getElementById('ov-btn');
   var btnSound = document.getElementById('btn-sound');
+  var confirmEl = document.getElementById('confirm');
+  var cfYes = document.getElementById('cf-yes');
+  var cfNo = document.getElementById('cf-no');
+  var countdownEl = document.getElementById('countdown');
+  var restartBlock = document.getElementById('restart-block');
+  var btnRestart = document.getElementById('btn-restart');
 
   // 兜底：任何未捕获的脚本错误都显示在 DEBUG 行，避免"静默空白"
   window.addEventListener('error', function (ev) {
@@ -325,7 +331,10 @@
   // ---------------- 主循环 ----------------
   function update(dt) {
     updateFlying(dt);
-    runPhysics(dt);
+
+    // 弹窗 / 倒计时期间，沙子也暂停，否则玩家在确认时局面还在变
+    var frozen = (phase === 'confirm' || phase === 'countdown');
+    if (!frozen) runPhysics(dt);
 
     if (phase !== 'playing') return;
 
@@ -529,13 +538,62 @@
     phase = 'playing';
     if (!spawnPiece()) return;
     hideOverlay();
+    if (restartBlock) restartBlock.classList.add('visible');
     updateHud();
     beep(440, 0.08, 'square', 0.04);
+  }
+
+  // ---------------- 重新开始（带确认 + 倒计时） ----------------
+  var cdTimer = null;
+
+  function askRestart() {
+    if (phase !== 'playing') return;
+    phase = 'confirm';
+    if (confirmEl) confirmEl.classList.add('show');
+  }
+
+  function closeConfirm() {
+    if (confirmEl) confirmEl.classList.remove('show');
+  }
+
+  function runCountdown() {
+    closeConfirm();
+    phase = 'countdown';
+    var n = 3;
+
+    function show() {
+      if (countdownEl) {
+        countdownEl.textContent = String(n);
+        countdownEl.classList.add('show');
+      }
+      beep(520, 0.09, 'square', 0.05);
+    }
+
+    if (!countdownEl) { phase = 'playing'; return; }
+    show();
+
+    cdTimer = window.setInterval(function () {
+      n--;
+      if (n <= 0) {
+        window.clearInterval(cdTimer);
+        cdTimer = null;
+        countdownEl.classList.remove('show');
+        countdownEl.textContent = '';
+        phase = 'playing';
+        beep(880, 0.14, 'square', 0.06);
+        return;
+      }
+      show();
+    }, 700);
   }
 
   function gameOver() {
     phase = 'over';
     piece = null;
+    if (restartBlock) restartBlock.classList.remove('visible');
+    if (cdTimer) { window.clearInterval(cdTimer); cdTimer = null; }
+    if (countdownEl) { countdownEl.classList.remove('show'); countdownEl.textContent = ''; }
+    closeConfirm();
     var isBest = score >= best && score > 0;
     showOverlay(
       'GAME OVER',
@@ -617,6 +675,13 @@
   for (var i = 0; i < padBtns.length; i++) {
     bindHold(padBtns[i], padBtns[i].getAttribute('data-act'));
   }
+
+  if (btnRestart) btnRestart.addEventListener('click', askRestart);
+  if (cfYes) cfYes.addEventListener('click', function () {
+    closeConfirm();
+    startGame();
+  });
+  if (cfNo) cfNo.addEventListener('click', runCountdown);
 
   ovBtn.addEventListener('click', function () {
     if (fatalMode) {

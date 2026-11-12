@@ -26,6 +26,7 @@ function makeCtx() {
 
 function makeEl(id) {
   var handlers = {};
+  var classes = {};
   return {
     id: id,
     width: 0,
@@ -33,7 +34,13 @@ function makeEl(id) {
     style: {},
     textContent: '',
     innerHTML: '',
-    classList: { add: function () {}, remove: function () {}, toggle: function () {}, contains: function () { return false; } },
+    classList: {
+      add: function (c) { classes[c] = 1; },
+      remove: function (c) { delete classes[c]; },
+      toggle: function (c) { if (classes[c]) delete classes[c]; else classes[c] = 1; },
+      contains: function (c) { return !!classes[c]; }
+    },
+    hasClass: function (c) { return !!classes[c]; },
     addEventListener: function (t, f) { handlers[t] = f; },
     dispatch: function (t, ev) { if (handlers[t]) handlers[t](ev || {}); },
     getContext: function () { return this._ctx || (this._ctx = makeCtx()); },
@@ -43,7 +50,9 @@ function makeEl(id) {
 
 var els = {};
 ['board', 'next', 'stat-score', 'stat-clears', 'stat-level', 'stat-time', 'stat-best', 'stat-debug',
- 'overlay', 'ov-title', 'ov-text', 'ov-btn', 'btn-sound'].forEach(function (id) {
+ 'overlay', 'ov-title', 'ov-text', 'ov-btn', 'btn-sound',
+ 'confirm', 'cf-title', 'cf-text', 'cf-yes', 'cf-no', 'countdown',
+ 'restart-block', 'btn-restart'].forEach(function (id) {
   els[id] = makeEl(id);
 });
 
@@ -144,6 +153,25 @@ if (!docHandlers.keydown) {
   console.log('按键前分数 = ' + before + '，按键后分数 = ' + after +
     (before === after ? '  ✓ 软降不加分' : '  ✗ 软降仍然加分'));
   if (before !== after) errors.push(new Error('软降加分'));
+}
+
+console.log('\n--- 重新开始流程 ---');
+try {
+  els['btn-restart'].dispatch('click');
+  var shown = els['confirm'].hasClass('show');
+  console.log('点重新开始 → 弹窗显示: ' + (shown ? '✓' : '✗'));
+  if (!shown) errors.push(new Error('确认弹窗没弹出'));
+
+  els['cf-no'].dispatch('click');
+  var closed = !els['confirm'].hasClass('show');
+  var cd = els['countdown'].hasClass('show');
+  console.log('点「否」→ 弹窗关闭: ' + (closed ? '✓' : '✗') +
+    '，倒计时出现: ' + (cd ? '✓ (' + els['countdown'].textContent + ')' : '✗'));
+  if (!closed) errors.push(new Error('确认弹窗没关闭'));
+  if (!cd) errors.push(new Error('倒计时没出现'));
+} catch (e) {
+  console.log('!!! 重新开始流程抛异常: ' + e.message);
+  errors.push(e);
 }
 
 console.log('\n异常总数 = ' + errors.length);

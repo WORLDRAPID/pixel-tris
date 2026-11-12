@@ -208,13 +208,86 @@ body {
   display: none;
 }
 
-/* DEBUG 默认隐藏，按 F12 或 ` 才显示 */
+/* DEBUG 默认隐藏，按 ` 才显示 */
 #debug-block {
   display: none;
 }
 
 body.show-debug #debug-block {
   display: block;
+}
+
+/* 面板里的小按钮（音效 / 重新开始） */
+.panel-btn {
+  display: block;
+  width: 100%;
+  padding: 7px 4px;
+  font-family: inherit;
+  font-size: 9px;
+  color: var(--gold);
+  background: #16224d;
+  border: 2px solid var(--line);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.panel-btn:active {
+  transform: translateY(1px);
+}
+
+.panel-btn.off {
+  color: #63719b;
+}
+
+/* 重新开始按钮：开局后才出现 */
+#restart-block {
+  display: none;
+}
+
+#restart-block.visible {
+  display: block;
+}
+
+/* 确认弹窗的两个按钮 */
+.cf-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-ghost {
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 10px;
+  color: #c3cef0;
+  background: #16224d;
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 4px 0 #060c22;
+  cursor: pointer;
+}
+
+.btn-ghost:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #060c22;
+}
+
+/* 3-2-1 倒计时 */
+.countdown {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: var(--gold);
+  text-shadow: 0 4px 0 #6b4c14, 0 0 30px rgba(232, 195, 122, 0.55);
+  z-index: 6;
+  pointer-events: none;
+}
+
+.countdown.show {
+  display: flex;
 }
 
 .btn-primary {
