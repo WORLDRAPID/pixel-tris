@@ -437,6 +437,7 @@
   }
 
   var lastTime = 0;
+  var fatalMode = false;
 
   function frame(t) {
     if (!lastTime) lastTime = t;
@@ -444,8 +445,21 @@
     lastTime = t;
     if (dt > 0.05) dt = 0.05;
 
-    update(dt);
-    render();
+    try {
+      update(dt);
+      render();
+    } catch (err) {
+      // 出错时把异常显示在页面上，而不是让画面悄悄冻住
+      if (!fatalMode) {
+        fatalMode = true;
+        showOverlay(
+          '出错了',
+          '渲染时出现异常，已暂停：<br><b>' + String((err && err.message) || err) + '</b><br><br>' +
+          '多半是浏览器用了旧缓存，按 F5 或 Ctrl+F5 强制刷新。',
+          '重新加载'
+        );
+      }
+    }
     window.requestAnimationFrame(frame);
   }
 
@@ -513,10 +527,8 @@
     if (phase !== 'playing' || !piece) return;
     if (act === 'left') tryMove(-1, 0);
     else if (act === 'right') tryMove(1, 0);
-    else if (act === 'down') {
-      if (tryMove(0, 1)) score += 1;
-      updateHud();
-    } else if (act === 'rotate') tryRotate();
+    else if (act === 'down') tryMove(0, 1);   // 软降不加分
+    else if (act === 'rotate') tryRotate();
     else if (act === 'drop') hardDrop();
   }
 
@@ -565,6 +577,10 @@
   }
 
   ovBtn.addEventListener('click', function () {
+    if (fatalMode) {
+      window.location.reload();
+      return;
+    }
     if (phase === 'paused') {
       phase = 'playing';
       hideOverlay();
