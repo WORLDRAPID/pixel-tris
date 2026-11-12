@@ -21,13 +21,18 @@
   var elTime = document.getElementById('stat-time');
   var elBest = document.getElementById('stat-best');
   var elDebug = document.getElementById('stat-debug');
-  var BUILD = 'v7';            // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
+  var BUILD = 'v10';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
   var frameCount = 0;
   var overlay = document.getElementById('overlay');
   var ovTitle = document.getElementById('ov-title');
   var ovText = document.getElementById('ov-text');
   var ovBtn = document.getElementById('ov-btn');
   var btnSound = document.getElementById('btn-sound');
+
+  // 兜底：任何未捕获的脚本错误都显示在 DEBUG 行，避免"静默空白"
+  window.addEventListener('error', function (ev) {
+    if (elDebug) elDebug.textContent = 'ERR ' + (ev.message || 'unknown');
+  });
 
   // ---------------- 颜色表 ----------------
   function hex2rgb(h) {
@@ -441,6 +446,20 @@
 
   var lastTime = 0;
   var fatalMode = false;
+  var loopMode = 'raf';        // raf | timer —— raf 不工作时自动降级
+
+  function boot(msg) {
+    if (elDebug) elDebug.textContent = msg;
+  }
+
+  function startTimerLoop() {
+    if (loopMode === 'timer') return;
+    loopMode = 'timer';
+    window.setInterval(function () {
+      var t = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
+      frame(t);
+    }, 16);
+  }
 
   function frame(t) {
     if (!lastTime) lastTime = t;
@@ -473,19 +492,20 @@
         );
       }
     }
-    window.requestAnimationFrame(frame);
+    if (loopMode === 'raf') window.requestAnimationFrame(frame);
   }
 
   // ---------------- 覆盖层 / 流程 ----------------
+  // 每个元素都判空：HTML 里少一个标签也不至于把整个游戏搞崩
   function showOverlay(title, text, btn) {
-    ovTitle.textContent = title;
-    ovText.innerHTML = text;
-    ovBtn.textContent = btn;
-    overlay.classList.add('show');
+    if (ovTitle) ovTitle.textContent = title;
+    if (ovText) ovText.innerHTML = text;
+    if (ovBtn) ovBtn.textContent = btn;
+    if (overlay) overlay.classList.add('show');
   }
 
   function hideOverlay() {
-    overlay.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
   }
 
   function startGame() {
@@ -619,14 +639,22 @@
   });
 
   // ---------------- 启动 ----------------
+  boot('boot1');
   layout();
+  boot('boot2:layout');
   nextPiece = nextFromBag();
   drawNext();
+  boot('boot3:draw');
   updateHud();
-  showOverlay(
-    'PIXEL TRIS',
-    '方块落地会炸成沙粒，<br>顺着坡度往两边溜。<br><br>同色沙粒连通、并且<br>同时贴住左右两侧，就能消除。',
-    '开始游戏'
-  );
+  showOverlay('PIXEL TRIS', '', '开始游戏');
   window.requestAnimationFrame(frame);
+  boot('boot4:raf');
+
+  // 看门狗：如果 rAF 一帧都没跑起来，就改用定时器驱动
+  window.setTimeout(function () {
+    if (frameCount === 0 && !fatalMode) {
+      boot('boot5:fallback');
+      startTimerLoop();
+    }
+  }, 700);
 })();

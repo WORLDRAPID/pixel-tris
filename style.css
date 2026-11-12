@@ -203,6 +203,11 @@ body {
   color: var(--gold);
 }
 
+/* 空段落不占位：开始界面只留标题和按钮 */
+.overlay-card p:empty {
+  display: none;
+}
+
 .btn-primary {
   display: inline-block;
   padding: 12px 20px;
