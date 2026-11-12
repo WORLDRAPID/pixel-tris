@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#070d24">
+  <title>PixelTris · 像素消除</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <h1 class="logo">PIXEL<span>TRIS</span></h1>
+      <p class="tagline">MORE CUSTOMISATION, MORE FUN.</p>
+      <button id="btn-sound" class="icon-btn" type="button" title="音效开关" aria-label="音效开关">♪</button>
+    </header>
+
+    <main class="stage">
+      <div class="board-wrap">
+        <canvas id="board" width="320" height="640"></canvas>
+        <div id="overlay" class="overlay show">
+          <div class="overlay-card">
+            <h2 id="ov-title">PIXEL TRIS</h2>
+            <p id="ov-text">同色方块连成一片，<br>并且同时贴住左右两侧，就能消除。</p>
+            <button id="ov-btn" class="btn-primary" type="button">开始游戏</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-block">
+          <div class="panel-label">NEXT</div>
+          <canvas id="next" width="80" height="80"></canvas>
+        </div>
+        <div class="panel-block">
+          <div class="panel-label">TIME</div>
+          <div id="stat-time" class="panel-value">00:00</div>
+        </div>
+        <div class="panel-block">
+          <div class="panel-label">SCORE</div>
+          <div id="stat-score" class="panel-value">0</div>
+        </div>
+        <div class="panel-block">
+          <div class="panel-label">CLEARS</div>
+          <div id="stat-clears" class="panel-value">0</div>
+        </div>
+        <div class="panel-block">
+          <div class="panel-label">LEVEL</div>
+          <div id="stat-level" class="panel-value">1</div>
+        </div>
+        <div class="panel-block">
+          <div class="panel-label">BEST</div>
+          <div id="stat-best" class="panel-value dim">0</div>
+        </div>
+      </aside>
+    </main>
+
+    <nav class="pad" aria-label="触屏操作">
+      <button type="button" data-act="left">◀</button>
+      <button type="button" data-act="rotate">⟳</button>
+      <button type="button" data-act="right">▶</button>
+      <button type="button" data-act="down">▼</button>
+      <button type="button" data-act="drop" class="wide">DROP</button>
+    </nav>
+
+    <p class="hint">← → 移动　↑ / Z 旋转　↓ 软降　空格 直落　P 暂停</p>
+  </div>
+
+  <script src="core.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
