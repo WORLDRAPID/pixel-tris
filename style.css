@@ -208,6 +208,15 @@ body {
   display: none;
 }
 
+/* DEBUG 默认隐藏，按 F12 或 ` 才显示 */
+#debug-block {
+  display: none;
+}
+
+body.show-debug #debug-block {
+  display: block;
+}
+
 .btn-primary {
   display: inline-block;
   padding: 12px 20px;

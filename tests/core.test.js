@@ -24,7 +24,7 @@ var g0 = C.createGrid();
 ok('空网格不碰撞', C.collides(g0, [[1, 1], [1, 1]], 4, 18) === false);
 ok('触底碰撞', C.collides(g0, [[1, 1], [1, 1]], 4, 19) === true);
 ok('出左边界', C.collides(g0, [[1, 1], [1, 1]], -1, 10) === true);
-ok('出右边界', C.collides(g0, [[1, 1], [1, 1]], 9, 10) === true);
+ok('出右边界', C.collides(g0, [[1, 1], [1, 1]], C.COLS - 1, 10) === true);
 
 console.log('\n[方块落地炸成颗粒]');
 var g1 = C.createGrid();

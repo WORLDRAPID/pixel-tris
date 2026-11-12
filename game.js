@@ -21,7 +21,7 @@
   var elTime = document.getElementById('stat-time');
   var elBest = document.getElementById('stat-best');
   var elDebug = document.getElementById('stat-debug');
-  var BUILD = 'v10';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
+  var BUILD = 'v13';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
   var frameCount = 0;
   var overlay = document.getElementById('overlay');
   var ovTitle = document.getElementById('ov-title');
@@ -67,7 +67,8 @@
     var availW = narrow ? window.innerWidth - outer : window.innerWidth - 176 - outer;
 
     var cssCell = Math.floor(Math.min(availW / COLS, availH / ROWS));
-    cssCell = Math.max(8, Math.min(cssCell, 46));
+    // 上限放开：窗口够大时让棋盘把高度吃满，横向也就跟着变宽
+    cssCell = Math.max(8, Math.min(cssCell, 72));
     cellPx = Math.max(8, Math.floor(cssCell * dpr));
 
     boardW = COLS * cellPx;
@@ -567,6 +568,14 @@
 
   document.addEventListener('keydown', function (e) {
     var k = e.key;
+
+    // 按 ` (反引号) 切换 DEBUG 面板
+    if (k === '`' || k === '~') {
+      e.preventDefault();
+      if (document.body) document.body.classList.toggle('show-debug');
+      return;
+    }
+
     if (k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowDown' || k === 'ArrowUp' || k === ' ') {
       e.preventDefault();
     }
