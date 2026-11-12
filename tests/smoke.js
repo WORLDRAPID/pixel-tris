@@ -42,7 +42,7 @@ function makeEl(id) {
 }
 
 var els = {};
-['board', 'next', 'stat-score', 'stat-clears', 'stat-level', 'stat-time', 'stat-best',
+['board', 'next', 'stat-score', 'stat-clears', 'stat-level', 'stat-time', 'stat-best', 'stat-debug',
  'overlay', 'ov-title', 'ov-text', 'ov-btn', 'btn-sound'].forEach(function (id) {
   els[id] = makeEl(id);
 });

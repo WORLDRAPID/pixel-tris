@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#070d24">
   <title>非常好小游戏</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <!-- 不引用任何外网资源：外网字体被墙时会卡住首屏渲染，导致整页空白 -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -54,6 +52,10 @@
           <div class="panel-label">BEST</div>
           <div id="stat-best" class="panel-value dim">0</div>
         </div>
+        <div class="panel-block">
+          <div class="panel-label">DEBUG</div>
+          <div id="stat-debug" class="panel-value dim">-</div>
+        </div>
       </aside>
     </main>
 
@@ -69,7 +71,7 @@
   </div>
 
   <!-- ?v= 是版本号：改了 js 之后把它加一，浏览器就不会用旧缓存 -->
-  <script src="core.js?v=5"></script>
-  <script src="game.js?v=5"></script>
+  <script src="core.js?v=7"></script>
+  <script src="game.js?v=7"></script>
 </body>
 </html>

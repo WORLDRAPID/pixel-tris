@@ -20,6 +20,9 @@
   var elLevel = document.getElementById('stat-level');
   var elTime = document.getElementById('stat-time');
   var elBest = document.getElementById('stat-best');
+  var elDebug = document.getElementById('stat-debug');
+  var BUILD = 'v7';            // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
+  var frameCount = 0;
   var overlay = document.getElementById('overlay');
   var ovTitle = document.getElementById('ov-title');
   var ovText = document.getElementById('ov-text');
@@ -448,6 +451,16 @@
     try {
       update(dt);
       render();
+      frameCount++;
+
+      // 每 15 帧刷一次体检信息：版本 / 帧数 / 沙粒数 / 有无方块 / 棋盘尺寸
+      if (elDebug && frameCount % 15 === 1) {
+        var n = 0;
+        for (var di = 0; di < grid.length; di++) if (grid[di]) n++;
+        elDebug.textContent = BUILD + ' f' + frameCount +
+          ' n' + n + ' p' + (piece ? 1 : 0) +
+          ' ' + boardW + 'x' + boardH;
+      }
     } catch (err) {
       // 出错时把异常显示在页面上，而不是让画面悄悄冻住
       if (!fatalMode) {

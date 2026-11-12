@@ -25,7 +25,8 @@ body {
     radial-gradient(1200px 600px at 50% -10%, #16255c 0%, transparent 60%),
     var(--bg);
   color: var(--text);
-  font-family: 'Press Start 2P', 'Courier New', ui-monospace, monospace;
+  /* 只用系统自带字体：不加载任何外网字体，避免被墙时整页空白 */
+  font-family: 'Press Start 2P', 'Lucida Console', 'Courier New', ui-monospace, monospace;
   overflow: hidden;
   touch-action: manipulation;
   user-select: none;
