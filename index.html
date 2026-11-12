@@ -12,7 +12,7 @@
   <div id="app">
     <header class="topbar">
       <h1 class="logo">PIXEL<span>TRIS</span></h1>
-      <p class="tagline">MORE CUSTOMISATION, MORE FUN.</p>
+      <button id="btn-sound" class="icon-btn" type="button" title="音效开关" aria-label="音效开关">♪</button>
     </header>
 
     <main class="stage">
@@ -35,7 +35,7 @@
             </div>
           </div>
         </div>
-        <div id="countdown" class="countdown"></div>
+        <div id="countdown" class="countdown"><canvas id="cd-canvas"></canvas></div>
       </div>
 
       <aside class="panel">
@@ -63,10 +63,6 @@
           <div class="panel-label">BEST</div>
           <div id="stat-best" class="panel-value dim">0</div>
         </div>
-        <div class="panel-block">
-          <div class="panel-label">SOUND</div>
-          <button id="btn-sound" class="panel-btn" type="button" title="音效开关" aria-label="音效开关">♪</button>
-        </div>
         <div class="panel-block" id="restart-block">
           <div class="panel-label">RESTART</div>
           <button id="btn-restart" class="panel-btn" type="button">重新开始</button>
@@ -90,7 +86,7 @@
   </div>
 
   <!-- ?v= 是版本号：改了 js 之后把它加一，浏览器就不会用旧缓存 -->
-  <script src="core.js?v=14"></script>
-  <script src="game.js?v=14"></script>
+  <script src="core.js?v=17"></script>
+  <script src="game.js?v=17"></script>
 </body>
 </html>

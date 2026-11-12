@@ -21,7 +21,7 @@
   var elTime = document.getElementById('stat-time');
   var elBest = document.getElementById('stat-best');
   var elDebug = document.getElementById('stat-debug');
-  var BUILD = 'v14';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
+  var BUILD = 'v17';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
   var frameCount = 0;
   var overlay = document.getElementById('overlay');
   var ovTitle = document.getElementById('ov-title');
@@ -32,6 +32,8 @@
   var cfYes = document.getElementById('cf-yes');
   var cfNo = document.getElementById('cf-no');
   var countdownEl = document.getElementById('countdown');
+  var cdCanvas = document.getElementById('cd-canvas');
+  var cdCtx = cdCanvas ? cdCanvas.getContext('2d') : null;
   var restartBlock = document.getElementById('restart-block');
   var btnRestart = document.getElementById('btn-restart');
 
@@ -556,15 +558,66 @@
     if (confirmEl) confirmEl.classList.remove('show');
   }
 
+  // ---------------- 点阵数字（不用任何字体） ----------------
+  // 每个数字是 5x7 的点阵，1 表示亮格
+  var DIGIT_MAP = {
+    1: ['00100', '01100', '00100', '00100', '00100', '00100', '01110'],
+    2: ['01110', '10001', '00001', '00010', '00100', '01000', '11111'],
+    3: ['11110', '00001', '00001', '01110', '00001', '00001', '11110']
+  };
+
+  function paintDigit(rows, px, ox, oy, color) {
+    cdCtx.fillStyle = color;
+    for (var y = 0; y < rows.length; y++) {
+      for (var x = 0; x < 5; x++) {
+        if (rows[y].charAt(x) === '1') {
+          cdCtx.fillRect(ox + x * px, oy + y * px, px, px);
+        }
+      }
+    }
+  }
+
+  /** 把数字 n 画到 canvas 上：5x7 点阵，每格 px 像素，带右下投影 */
+  function drawCountdownDigit(n) {
+    if (!cdCanvas || !cdCtx) return;
+    var rows = DIGIT_MAP[n];
+    if (!rows) return;
+
+    var px = 18;                       // 每个「像素」的边长（改这个数就能调倒计时大小）
+    var w = 5 * px;
+    var h = 7 * px;
+    var shadow = Math.round(px * 0.55);
+
+    cdCanvas.width = w + shadow;
+    cdCanvas.height = h + shadow;
+    cdCanvas.style.width = cdCanvas.width + 'px';
+    cdCanvas.style.height = cdCanvas.height + 'px';
+
+    cdCtx.clearRect(0, 0, cdCanvas.width, cdCanvas.height);
+    cdCtx.imageSmoothingEnabled = false;
+
+    paintDigit(rows, px, shadow, shadow, '#8a6a2a');   // 投影
+    paintDigit(rows, px, 0, 0, '#f6d488');             // 主体
+  }
+
+  function clearCountdownDigit() {
+    if (!cdCtx || !cdCanvas) return;
+    cdCtx.clearRect(0, 0, cdCanvas.width, cdCanvas.height);
+  }
+
   function runCountdown() {
     closeConfirm();
     phase = 'countdown';
     var n = 3;
 
     function show() {
+      drawCountdownDigit(n);
       if (countdownEl) {
-        countdownEl.textContent = String(n);
         countdownEl.classList.add('show');
+        // 重新触发缩放动画（换数字不会自动重播 animation）
+        countdownEl.classList.remove('pop');
+        if (countdownEl.offsetWidth) { /* 强制重排 */ }
+        countdownEl.classList.add('pop');
       }
       beep(520, 0.09, 'square', 0.05);
     }
@@ -578,7 +631,7 @@
         window.clearInterval(cdTimer);
         cdTimer = null;
         countdownEl.classList.remove('show');
-        countdownEl.textContent = '';
+        clearCountdownDigit();
         phase = 'playing';
         beep(880, 0.14, 'square', 0.06);
         return;
@@ -592,7 +645,8 @@
     piece = null;
     if (restartBlock) restartBlock.classList.remove('visible');
     if (cdTimer) { window.clearInterval(cdTimer); cdTimer = null; }
-    if (countdownEl) { countdownEl.classList.remove('show'); countdownEl.textContent = ''; }
+    if (countdownEl) countdownEl.classList.remove('show');
+    clearCountdownDigit();
     closeConfirm();
     var isBest = score >= best && score > 0;
     showOverlay(

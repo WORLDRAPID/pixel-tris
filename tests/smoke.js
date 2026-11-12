@@ -51,7 +51,7 @@ function makeEl(id) {
 var els = {};
 ['board', 'next', 'stat-score', 'stat-clears', 'stat-level', 'stat-time', 'stat-best', 'stat-debug',
  'overlay', 'ov-title', 'ov-text', 'ov-btn', 'btn-sound',
- 'confirm', 'cf-title', 'cf-text', 'cf-yes', 'cf-no', 'countdown',
+ 'confirm', 'cf-title', 'cf-text', 'cf-yes', 'cf-no', 'countdown', 'cd-canvas',
  'restart-block', 'btn-restart'].forEach(function (id) {
   els[id] = makeEl(id);
 });
@@ -166,7 +166,7 @@ try {
   var closed = !els['confirm'].hasClass('show');
   var cd = els['countdown'].hasClass('show');
   console.log('点「否」→ 弹窗关闭: ' + (closed ? '✓' : '✗') +
-    '，倒计时出现: ' + (cd ? '✓ (' + els['countdown'].textContent + ')' : '✗'));
+    '，倒计时出现: ' + (cd ? '✓' : '✗'));
   if (!closed) errors.push(new Error('确认弹窗没关闭'));
   if (!cd) errors.push(new Error('倒计时没出现'));
 } catch (e) {
