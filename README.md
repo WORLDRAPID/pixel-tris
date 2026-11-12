@@ -36,13 +36,7 @@ python -m http.server 8123 --bind 127.0.0.1 --directory .
 
 然后打开 http://127.0.0.1:8123
 
-## 部署到线上
-
-- **Netlify Drop**：整个文件夹拖到 https://app.netlify.com/drop
-- **Vercel**：`npx vercel --prod`
-- **GitHub Pages**：推到仓库 → Settings → Pages
-
-全是静态文件，任何静态托管都能直接跑
+用的全是静态文件，任何静态托管都能直接跑
 
 ## 文件结构
 
