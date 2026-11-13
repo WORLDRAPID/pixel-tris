@@ -21,7 +21,7 @@
   var elTime = document.getElementById('stat-time');
   var elBest = document.getElementById('stat-best');
   var elDebug = document.getElementById('stat-debug');
-  var BUILD = 'v17';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
+  var BUILD = 'v18';           // 构建标记：换代码时一起改，用来确认浏览器加载的是哪一版
   var frameCount = 0;
   var overlay = document.getElementById('overlay');
   var ovTitle = document.getElementById('ov-title');
@@ -249,7 +249,7 @@
   }
 
   // ---------------- 沙粒物理 ----------------
-  var STEP = 1 / 67; //更改沙子的流速
+  var STEP = 1 / 91; //更改沙子的流速
 
   function runPhysics(dt) {
     physicsAcc += dt;
